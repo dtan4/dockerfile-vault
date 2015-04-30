@@ -18,4 +18,7 @@ RUN apt-get update && \
     rm -rf /tmp/vault && \
     rm -rf /var/lib/apt/lists/*
 
+VOLUME ["/vault"]
+WORKDIR /vault
+
 CMD ["vault", "version"]
