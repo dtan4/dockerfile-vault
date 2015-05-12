@@ -10,7 +10,7 @@ Please see [official document](https://www.vaultproject.io/docs/index.html) for 
 ## HOW TO USE
 
 ```bash
-$ docker run --rm quay.io/dtan4/vault vault version
+$ docker run --rm quay.io/dtan4/vault:latest vault version
 Vault v0.1.2
 ```
 
