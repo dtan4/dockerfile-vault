@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 MAINTAINER Daisuke Fujita <dtanshi45@gmail.com> (@dtan4)
 
-ENV VAULT_VERSION 0.1.0
+ENV VAULT_VERSION 0.1.2
 
 RUN apt-get update && \
     apt-get install -y \
