@@ -5,13 +5,13 @@ Please see [official document](https://www.vaultproject.io/docs/index.html) for 
 ## SUPPORTED TAGS
 
 - `latest`
-  - Vault 0.1.2
+  - Vault 0.2.0
 
 ## HOW TO USE
 
 ```bash
 $ docker run --rm quay.io/dtan4/vault:latest vault version
-Vault v0.1.2
+Vault v0.2.0
 ```
 
 ## LICENSE
