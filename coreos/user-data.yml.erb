@@ -4,7 +4,7 @@
 coreos:
   update:
     group: beta
-    reboot-strategy: false
+    reboot-strategy: off
   etcd2:
     #generate a new token for each unique cluster from https://discovery.etcd.io/new
     #discovery: https://discovery.etcd.io/<token>
@@ -15,10 +15,6 @@ coreos:
     # legacy ports can be omitted if your application doesn't depend on them
     listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
     listen-peer-urls: http://$private_ipv4:2380,http://$private_ipv4:7001
-  fleet:
-    public-ip: $public_ipv4
-  flannel:
-    interface: $public_ipv4
   units:
   - name: etcd2.service
     command: start
@@ -36,6 +32,26 @@ coreos:
 
       [Install]
       WantedBy=sockets.target
+  - name: vault.service
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      Description=Vault
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      TimeoutStartSec=0
+      User=core
+      ExecStartPre=-/usr/bin/docker kill vault
+      ExecStartPre=-/usr/bin/docker rm vault
+      ExecStartPre=/usr/bin/docker pull quay.io/dtan4/vault:latest
+      ExecStart=/usr/bin/docker run --cap-add IPC_LOCK --name vault -p 8200:8200 -v /home/core/config:/config quay.io/dtan4/vault:latest vault server -config=/config/server.hcl
+      ExecStop=/usr/bin/docker stop vault
+
+      [Install]
+      WantedBy=multi-user.target
 write_files:
   - path: /etc/ssh/sshd_config
     permissions: "0600"
@@ -48,3 +64,14 @@ write_files:
       PermitRootLogin no
       PasswordAuthentication no
       ChallengeResponseAuthentication no
+  - path: /home/core/config/server.hcl
+    content: |
+      backend "etcd" {
+        address = "http://$private_ipv4:2379"
+        advertise_addr = "http://$private_ipv4:2379"
+      }
+
+      listener "tcp" {
+       address = "0.0.0.0:8200"
+       tls_disable = 1
+      }
